@@ -5,27 +5,32 @@
     <title>Upload Dataset</title>
 </head>
 <body>
+    <nav>
+        <a href="/">Home</a>
+    </nav>
 
-    <h2>Upload CSV</h2>
+    <h2>Upload Dataset</h2>
     
     <!-- Upload Form -->
     <form action="/upload" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".csv" required>
+        <label for="file">Select CSV File:</label>
+        <input type="file" id="file" name="file" accept=".csv" required>
         <button type="submit">Upload & Process</button>
     </form>
 
     <!-- Dropdown appears after upload -->
     {% if features %}
-        <h3>Select the dependent Feature:</h3>
+        <hr>
+        <h3>Select Target (Dependent) Feature:</h3>
         <form action="/training" method="POST">
-            <select name="selected_feature">
+            <label for="selected_feature">Target Feature:</label>
+            <select id="selected_feature" name="selected_feature">
                 {% for col in features %}
                     <option value="{{ col }}">{{ col }}</option>
                 {% endfor %}
             </select>
-            <button type="submit">Confirm Feature</button>
+            <button type="submit">Confirm Feature & Train</button>
         </form>
     {% endif %}
-
 </body>
 </html>

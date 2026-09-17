@@ -84,13 +84,26 @@ class ModelTrainer:
                 }
             }
 
+            logging.info('Starting Hyperparameter tuning')
+
             # we are getting model report after hyperparameter tuning
             model_report:dict=evaluate_model(X_train,y_train,X_test,y_test,models,params)
 
             # now selecting best model for this data
-            
+            best_model_name=max(model_report, key=lambda x: model_report[x]["score"])
+            best_model=model_report[best_model_name]['best_model']
+            best_model_score=model_report[best_model_name]['score']
 
-            
+            # we dont want the model if their score is less than .6 as they are just then
+            if best_model_score<0.6:
+                raise CustomException('No good model found',sys)
+
+            logging.info('Best model found for both training and testing dataset')
+
+            save_pickle(
+                file_path=self.model_trainer_config.trained_model_file_path,
+                obj=best_model
+            )
                 
         except Exception as e:
             raise CustomException(e,sys)  

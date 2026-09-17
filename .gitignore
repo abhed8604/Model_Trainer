@@ -1,8 +1,27 @@
-venv
+# Bytecode and cache
 __pycache__/
-artifacts/
-logs/
+*.pyc
+
+# Virtual environments
+venv/
+.venv/
+
+# Packaging and builds
+build/
+dist/
+*.egg-info/
+
+# Environment variables
 .env
-catboost_info/
-Model_Trainer.egg-info
+
+# Project logs and generated artifacts
+logs/
+*.log
+artifacts/
 try_data/
+catboost_info/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store

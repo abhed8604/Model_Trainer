@@ -48,11 +48,18 @@ def evaluate_model(X_train,y_train,X_test,y_test,models,params):
 
             report[list(models.keys())[i]]={
                 "best_model": best_model,
-                "best_params": gs.best_params_,
                 "score": test_score
             }
 
         return report
                  
+    except Exception as e:
+        raise CustomException(e,sys)
+
+def load_object(file_path): # we will use this function to load the model from pickle file
+    try:
+        with open(file_path,'rb') as file_obj:
+            return dill.load(file_obj)
+            
     except Exception as e:
         raise CustomException(e,sys)

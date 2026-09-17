@@ -21,12 +21,24 @@ class DataTransformation:
     def __init__(self):
         self.data_transformation_config=DataTransformationConfig()
 
-    def get_preprocessor_obj(self):
+    def get_preprocessor_obj(self,selected_feature):
         try:
 
             df=pd.read_csv('artifacts/train.csv')
             numerical_features = df.select_dtypes(include=['number']).columns.tolist()
             categorical_features = df.select_dtypes(include=['object', 'category']).columns.tolist()
+
+            # removing dependent feature from num feature
+            if selected_feature in numerical_features:
+                numerical_features.remove(selected_feature) 
+            
+            # to extract all uinque values from the categorical_features
+            cat_feature_info={}
+            for cat_feature in categorical_features:
+                cat_feature_info[cat_feature]={
+                    'name': cat_feature,
+                    'values': df[cat_feature].dropna().unique().tolist()
+                }
     
             # pipeline chains multiple steps of data transformation as one object
             num_pipeline=Pipeline(
@@ -54,7 +66,7 @@ class DataTransformation:
                 ]
             )
 
-            return preprocessor
+            return preprocessor,cat_feature_info
 
         except Exception as e:
             raise CustomException(e,sys)
@@ -69,7 +81,7 @@ class DataTransformation:
             
             logging.info('Obtaining preprocessing object')
             
-            preprocessing_obj=self.get_data_transformer_objects()
+            preprocessing_obj,cat_feature_info=self.get_preprocessor_obj(selected_feature)
     
             input_feature_train_df=train_df.drop(columns=[selected_feature])
             target_feature_train_df=train_df[selected_feature]
@@ -97,6 +109,7 @@ class DataTransformation:
             return(
                 train_arr,
                 test_arr,
+                cat_feature_info,
                 self.data_transformation_config.preprocessor_obj_file_path
             )
 

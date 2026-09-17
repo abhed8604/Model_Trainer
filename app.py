@@ -2,6 +2,7 @@ from flask import Flask,request,render_template
 
 from src.components.data_ingestion import DataIngestion
 from src.components.data_transformation import DataTransformation
+from src.components.model_training import ModelTrainer
 
 app=Flask(__name__)
 
@@ -24,16 +25,21 @@ def upload():
 
 @app.route('/training',methods=['POST'])
 def feature_selection():
+    
     selected_feature = request.form.get('selected_feature')
 
-    # we will first remove dependent feature from the training dataset
-    # then we will do preprocessing
-    # then make pickle file
-    # then model selction and hyperparameter tuning
-    # then making pickle file of best model
+    datatransformation=DataTransformation()
+    train_arr,test_arr,cat_feature_info,a=datatransformation.initiate_preprocessing(selected_feature)
+    
+    modeltrainer=ModelTrainer()
+    modeltrainer.initiate_model_trainer(train_arr,test_arr)
     
     return render_template('training.html', selected_feature=selected_feature)
 
+
+@app.route('/predict', methods=['GET','POST'])
+def predictor():
+    pass
 
 if __name__=='__main__':
     app.run(host='0.0.0.0',port=5000)

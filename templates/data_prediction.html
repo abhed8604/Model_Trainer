@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Prediction</title>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a> | 
+        <a href="/upload">Upload Dataset</a>
+    </nav>
+
+    <h2>Data Prediction</h2>
+
+    <!-- Prediction Form -->
+    <form action="/predict" method="POST">
+        {% if features %}
+            {% for feature in features %}
+                <div>
+                    <label for="{{ feature }}">{{ feature }}:</label>
+                    <input type="text" id="{{ feature }}" name="{{ feature }}" required>
+                </div>
+                <br>
+            {% endfor %}
+        {% else %}
+            <div>
+                <label for="input_data">Input Features (comma-separated):</label><br>
+                <input type="text" id="input_data" name="input_data" placeholder="e.g. 10, 20, 30">
+            </div>
+        {% endif %}
+        <br>
+        <button type="submit">Predict</button>
+    </form>
+
+    <!-- Prediction Results -->
+    {% if result %}
+        <hr>
+        <h3>Prediction Result: {{ result }}</h3>
+    {% elif results %}
+        <hr>
+        <h3>Prediction Result: {{ results }}</h3>
+    {% endif %}
+</body>
+</html>
