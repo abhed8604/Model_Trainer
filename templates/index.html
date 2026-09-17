@@ -2,17 +2,155 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Model Trainer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --radius: 12px;
+            --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.04), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 36px 32px;
+        }
+        .badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            background: #eff6ff;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            margin-bottom: 12px;
+        }
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 28px;
+        }
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: #ffffff;
+            border: 1px solid var(--primary);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+        .btn-secondary {
+            background-color: #ffffff;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover {
+            background-color: #f1f5f9;
+        }
+        .features {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+        .features h3 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        .features ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .features li {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .features li::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Model Trainer</h1>
-    <p>Automated Machine Learning Training and Prediction Pipeline</p>
-    
-    <nav>
-        <ul>
-            <li><a href="/upload">Upload Dataset & Train</a></li>
-            <li><a href="/predict">Make Prediction</a></li>
-        </ul>
-    </nav>
+    <div class="container">
+        <span class="badge">ML Pipeline</span>
+        <h1>Model Trainer</h1>
+        <p class="subtitle">Automated dataset ingestion, model evaluation with hyperparameter tuning, and real-time prediction.</p>
+
+        <div class="actions">
+            <a href="/upload" class="btn btn-primary">Upload Dataset & Train</a>
+            <a href="/predict" class="btn btn-secondary">Make Prediction</a>
+        </div>
+
+        <div class="features">
+            <h3>Pipeline Stages</h3>
+            <ul>
+                <li>CSV dataset upload & automatic train/test split</li>
+                <li>Target feature selection & automated preprocessing</li>
+                <li>Hyperparameter tuning across regression algorithms</li>
+                <li>Artifact persistence for production inference</li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>

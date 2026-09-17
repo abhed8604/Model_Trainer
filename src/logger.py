@@ -13,7 +13,6 @@ logging.basicConfig(
     level=logging.INFO,
     handlers=[
         logging.FileHandler(LOG_FILE_PATH),
-        logging.StreamHandler()
     ]
 )
 

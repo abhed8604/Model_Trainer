@@ -2,35 +2,171 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Upload Dataset</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Dataset - Model Trainer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --radius: 12px;
+            --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.04), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 36px 32px;
+        }
+        nav {
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.15s;
+        }
+        nav a:hover {
+            color: var(--primary);
+        }
+        .step-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            background: #eff6ff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        input[type="file"], select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        input[type="file"] {
+            padding: 8px 10px;
+            background: #f8fafc;
+            cursor: pointer;
+        }
+        input[type="file"]:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 11px 20px;
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.15s;
+        }
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+        .divider {
+            border: 0;
+            height: 1px;
+            background: var(--border);
+            margin: 32px 0;
+        }
+    </style>
 </head>
 <body>
-    <nav>
-        <a href="/">Home</a>
-    </nav>
+    <div class="container">
+        <nav>
+            <a href="/">← Back to Home</a>
+        </nav>
 
-    <h2>Upload Dataset</h2>
-    
-    <!-- Upload Form -->
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-        <label for="file">Select CSV File:</label>
-        <input type="file" id="file" name="file" accept=".csv" required>
-        <button type="submit">Upload & Process</button>
-    </form>
+        <span class="step-tag">Step 1</span>
+        <h2>Upload Dataset</h2>
+        <p class="subtitle">Select a CSV file to split into training and testing sets.</p>
 
-    <!-- Dropdown appears after upload -->
-    {% if features %}
-        <hr>
-        <h3>Select Target (Dependent) Feature:</h3>
-        <form action="/training" method="POST">
-            <label for="selected_feature">Target Feature:</label>
-            <select id="selected_feature" name="selected_feature">
-                {% for col in features %}
-                    <option value="{{ col }}">{{ col }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit">Confirm Feature & Train</button>
+        <!-- Upload Form -->
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">Dataset CSV File</label>
+                <input type="file" id="file" name="file" accept=".csv" required>
+            </div>
+            <button type="submit" class="btn">Upload & Process</button>
         </form>
-    {% endif %}
+
+        <!-- Dropdown appears after upload -->
+        {% if features %}
+            <hr class="divider">
+            <span class="step-tag">Step 2</span>
+            <h2>Select Dependent Feature</h2>
+            <p class="subtitle">Choose the target column you want the model to learn and predict.</p>
+
+            <form action="/training" method="POST">
+                <div class="form-group">
+                    <label for="selected_feature">Target Column</label>
+                    <select id="selected_feature" name="selected_feature" required>
+                        {% for col in features %}
+                            <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn">Confirm Feature & Continue →</button>
+            </form>
+        {% endif %}
+    </div>
 </body>
 </html>

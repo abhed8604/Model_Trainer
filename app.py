@@ -85,4 +85,5 @@ def predictor():
     )
 
 if __name__=='__main__':
+    print("\nServer running! Open: http://127.0.0.1:5000\n")
     app.run(host='0.0.0.0',port=5000)

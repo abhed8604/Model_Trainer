@@ -2,47 +2,180 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Data Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Prediction - Model Trainer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success-bg: #f0fdf4;
+            --success-border: #bbf7d0;
+            --success-text: #15803d;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --radius: 12px;
+            --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.04), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .container {
+            width: 100%;
+            max-width: 560px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 36px 32px;
+        }
+        nav {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            font-size: 0.875rem;
+        }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        nav a:hover {
+            color: var(--primary);
+        }
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 11px 20px;
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.15s;
+            margin-top: 8px;
+        }
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+        .result-card {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            border-radius: 8px;
+            padding: 18px 20px;
+            margin-top: 24px;
+            text-align: center;
+        }
+        .result-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            color: var(--success-text);
+            margin-bottom: 4px;
+        }
+        .result-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--success-text);
+        }
+    </style>
 </head>
 <body>
-    <nav>
-        <a href="/">Home</a> | 
-        <a href="/upload">Upload Dataset</a>
-    </nav>
+    <div class="container">
+        <nav>
+            <a href="/">Home</a> · <a href="/upload">Upload Dataset</a>
+        </nav>
 
-    <h2>Data Prediction</h2>
+        <h2>Data Prediction</h2>
+        <p class="subtitle">Enter input features to obtain inference from the trained model.</p>
 
-    <!-- Prediction Form -->
-    <form action="/predict" method="POST">
-        {% for feature in features %}
-            <div>
-                <label for="{{ feature }}">{{ feature }}:</label>
-                
-                {% if feature in cat_feature_info %}
-                    <!-- Categorical Feature Dropdown -->
-                    <select id="{{ feature }}" name="{{ feature }}" required>
-                        <option value="" disabled selected>Select {{ feature }}</option>
-                        {% for val in cat_feature_info[feature]['values'] %}
-                            <option value="{{ val }}">{{ val }}</option>
-                        {% endfor %}
-                    </select>
-                {% else %}
-                    <!-- Numerical Feature Input -->
-                    <input type="number" step="any" id="{{ feature }}" name="{{ feature }}" placeholder="Enter number" required>
-                {% endif %}
+        <!-- Prediction Form -->
+        <form action="/predict" method="POST">
+            {% for feature in features %}
+                <div class="form-group">
+                    <label for="{{ feature }}">{{ feature }}</label>
+                    
+                    {% if feature in cat_feature_info %}
+                        <!-- Categorical Feature Dropdown -->
+                        <select id="{{ feature }}" name="{{ feature }}" required>
+                            <option value="" disabled selected>Select {{ feature }}</option>
+                            {% for val in cat_feature_info[feature]['values'] %}
+                                <option value="{{ val }}">{{ val }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <!-- Numerical Feature Input -->
+                        <input type="number" step="any" id="{{ feature }}" name="{{ feature }}" placeholder="Enter value" required>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn">Predict</button>
+        </form>
+
+        <!-- Prediction Results -->
+        {% if result is not none %}
+            <div class="result-card">
+                <div class="result-title">Prediction Result</div>
+                <div class="result-value">{{ result }}</div>
             </div>
-            <br>
-        {% endfor %}
-        <button type="submit">Predict</button>
-    </form>
-
-    <!-- Prediction Results -->
-    {% if result is not none %}
-        <hr>
-        <h3>Prediction Result: {{ result }}</h3>
-    {% elif results %}
-        <hr>
-        <h3>Prediction Result: {{ results }}</h3>
-    {% endif %}
+        {% elif results %}
+            <div class="result-card">
+                <div class="result-title">Prediction Result</div>
+                <div class="result-value">{{ results }}</div>
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>
