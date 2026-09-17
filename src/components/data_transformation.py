@@ -1,9 +1,9 @@
 import os
 import sys
 from dataclasses import dataclass
-
 import pandas as pd
 import numpy as np
+
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
@@ -82,11 +82,12 @@ class DataTransformation:
             # now we are sending the train and test data to get preprocessed
             input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df)
             input_feature_test_arr=preprocessing_obj.transform(input_feature_test_df)
-            
+
+            # we use c_ to add two arrays column to column
             train_arr=np.c_[input_feature_train_arr,np.array(target_feature_train_df)]
             test_arr=np.c_[input_feature_test_arr,np.array(target_feature_test_df)]
             
-            logging.info('Saved preprocessing object')
+            logging.info('Saving preprocessing object')
     
             save_pickle(
                 file_path=self.data_transformation_config.preprocessor_obj_file_path,

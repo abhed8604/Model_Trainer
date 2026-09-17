@@ -10,9 +10,9 @@ class CustomException(Exception):
 
     def __str__(self):
         return (
-            '\n' + '─' * 100 + '\n'
+            '\n' + '__' * 100 + '\n'
             f'File:    {self.file_name}\n'
             f'Line:    {self.lineno}\n'
             f'Message: {self.error_message}\n'
-            + '─' * 100
+            + '__' * 100
         )
