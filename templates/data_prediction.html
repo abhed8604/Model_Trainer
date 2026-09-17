@@ -14,26 +14,30 @@
 
     <!-- Prediction Form -->
     <form action="/predict" method="POST">
-        {% if features %}
-            {% for feature in features %}
-                <div>
-                    <label for="{{ feature }}">{{ feature }}:</label>
-                    <input type="text" id="{{ feature }}" name="{{ feature }}" required>
-                </div>
-                <br>
-            {% endfor %}
-        {% else %}
+        {% for feature in features %}
             <div>
-                <label for="input_data">Input Features (comma-separated):</label><br>
-                <input type="text" id="input_data" name="input_data" placeholder="e.g. 10, 20, 30">
+                <label for="{{ feature }}">{{ feature }}:</label>
+                
+                {% if feature in cat_feature_info %}
+                    <!-- Categorical Feature Dropdown -->
+                    <select id="{{ feature }}" name="{{ feature }}" required>
+                        <option value="" disabled selected>Select {{ feature }}</option>
+                        {% for val in cat_feature_info[feature]['values'] %}
+                            <option value="{{ val }}">{{ val }}</option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <!-- Numerical Feature Input -->
+                    <input type="number" step="any" id="{{ feature }}" name="{{ feature }}" placeholder="Enter number" required>
+                {% endif %}
             </div>
-        {% endif %}
-        <br>
+            <br>
+        {% endfor %}
         <button type="submit">Predict</button>
     </form>
 
     <!-- Prediction Results -->
-    {% if result %}
+    {% if result is not none %}
         <hr>
         <h3>Prediction Result: {{ result }}</h3>
     {% elif results %}

@@ -1,8 +1,13 @@
-from flask import Flask,request,render_template
+import os
+import pandas as pd
+
+from flask import Flask,request,render_template,jsonify
 
 from src.components.data_ingestion import DataIngestion
 from src.components.data_transformation import DataTransformation
 from src.components.model_training import ModelTrainer
+from src.utils import load_object
+from src.components.predict import PredictPipeline
 
 app=Flask(__name__)
 
@@ -24,22 +29,60 @@ def upload():
     return render_template('upload.html',features=features)
 
 @app.route('/training',methods=['POST'])
-def feature_selection():
-    
+def training_page():    
     selected_feature = request.form.get('selected_feature')
+    
+    return render_template('training.html',selected_feature=selected_feature)
 
+@app.route('/api/train', methods=['POST'])
+def run_training():
+    data = request.get_json()
+    selected_feature = data.get('selected_feature')
+    
     datatransformation=DataTransformation()
-    train_arr,test_arr,cat_feature_info,a=datatransformation.initiate_preprocessing(selected_feature)
+    train_arr,test_arr=datatransformation.initiate_preprocessing(selected_feature)
     
     modeltrainer=ModelTrainer()
-    modeltrainer.initiate_model_trainer(train_arr,test_arr)
+    best_model_name,score,model_report=modeltrainer.initiate_model_trainer(train_arr,test_arr)
     
-    return render_template('training.html', selected_feature=selected_feature)
+    return jsonify({
+        "status": "success",
+        "best_model_name": best_model_name,
+        "score": round(score, 4),
+        "model_report": {k: {"score": round(v["score"], 4)} for k, v in model_report.items()}
+    })
 
 
 @app.route('/predict', methods=['GET','POST'])
 def predictor():
-    pass
+    preprocessor_path=os.path.join('artifacts', 'preprocessor.pkl')
+    cat_info_path=os.path.join('artifacts', 'cat_feature_info.pkl')
+
+    preprocessor=load_object(preprocessor_path)
+    features = list(preprocessor.feature_names_in_) # we use this to get all the feature name as we cant get our feature list from upload route
+    cat_feature_info = load_object(cat_info_path)
+    
+    if request.method == 'GET':
+        return render_template('data_prediction.html',features=features,cat_feature_info=cat_feature_info)
+
+    # POST after form
+    data = {feature: [request.form.get(feature)] for feature in features}
+    pred_df = pd.DataFrame(data)
+
+    for col in pred_df.columns:
+        if col not in cat_feature_info:
+            pred_df[col] = pd.to_numeric(pred_df[col])
+
+    pipeline = PredictPipeline()
+    preds = pipeline.predict(pred_df)
+    result = round(preds[0], 2) # we are rounding the result to make it look clean
+    
+    return render_template(
+        'data_prediction.html',
+        features=features,
+        cat_feature_info=cat_feature_info,
+        result=result
+    )
 
 if __name__=='__main__':
     app.run(host='0.0.0.0',port=5000)

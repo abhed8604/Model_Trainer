@@ -104,6 +104,8 @@ class ModelTrainer:
                 file_path=self.model_trainer_config.trained_model_file_path,
                 obj=best_model
             )
+
+            return best_model_name, best_model_score, model_report
                 
         except Exception as e:
             raise CustomException(e,sys)  

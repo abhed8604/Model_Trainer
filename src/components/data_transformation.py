@@ -52,7 +52,7 @@ class DataTransformation:
             cat_pipeline=Pipeline(
                 steps=[
                     ('imputer',SimpleImputer(strategy='most_frequent')),
-                    ('one_hot_encoder',OneHotEncoder()),
+                    ('one_hot_encoder',OneHotEncoder(sparse_output=False, handle_unknown='ignore')), # reducing sparse output from OHE
                     ('scaler',StandardScaler(with_mean=False))
                 ]
             )
@@ -100,17 +100,22 @@ class DataTransformation:
             test_arr=np.c_[input_feature_test_arr,np.array(target_feature_test_df)]
             
             logging.info('Saving preprocessing object')
-    
+
+            # Save preprocessor 
             save_pickle(
                 file_path=self.data_transformation_config.preprocessor_obj_file_path,
                 obj=preprocessing_obj
+            )
+
+            # Save categorical features info
+            save_pickle(
+                file_path=os.path.join('artifacts', 'cat_feature_info.pkl'),
+                obj=cat_feature_info
             )
     
             return(
                 train_arr,
                 test_arr,
-                cat_feature_info,
-                self.data_transformation_config.preprocessor_obj_file_path
             )
 
         except Exception as e:

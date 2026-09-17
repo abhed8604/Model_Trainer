@@ -18,7 +18,6 @@ dist/
 logs/
 *.log
 artifacts/
-try_data/
 catboost_info/
 
 # Editor and OS files

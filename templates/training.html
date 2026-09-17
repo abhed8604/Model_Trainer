@@ -3,50 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <title>Model Training</title>
+    <style>
+        #progress-container { width: 100%; max-width: 400px; background: #ddd; height: 20px; border-radius: 5px; margin: 15px 0; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: #4caf50; transition: width 0.4s; }
+    </style>
 </head>
 <body>
-    <nav>
-        <a href="/">Home</a> | 
-        <a href="/upload">Upload Again</a>
-    </nav>
-
     <h2>Model Training</h2>
+    <p>Target Feature: <strong>{{ selected_feature }}</strong></p>
 
-    {% if selected_feature %}
-        <p>Selected Target Feature: <strong>{{ selected_feature }}</strong></p>
-    {% endif %}
+    <!-- Progress State -->
+    <div id="loading-section">
+        <p id="status-text">Training in progress, please wait...</p>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+    </div>
 
-    {% if best_model_name %}
+    <!-- Results (hidden until training finishes) -->
+    <div id="results-section" style="display:none;">
         <h3>Training Results</h3>
-        <p>Best Model: <strong>{{ best_model_name }}</strong></p>
-        <p>Model Score (R2): <strong>{{ score }}</strong></p>
-    {% elif message %}
-        <p>{{ message }}</p>
-    {% else %}
-        <p>Training initiated. Check logs or proceed to prediction once complete.</p>
-    {% endif %}
+        <p>Best Model: <strong id="best-model"></strong></p>
+        <p>Model Score (R2): <strong id="score"></strong></p>
 
-    {% if model_report %}
         <h3>All Models Evaluation</h3>
-        <table border="1">
+        <table border="1" id="report-table">
             <thead>
-                <tr>
-                    <th>Model</th>
-                    <th>Score</th>
-                </tr>
+                <tr><th>Model</th><th>Score</th></tr>
             </thead>
-            <tbody>
-                {% for model, details in model_report.items() %}
-                <tr>
-                    <td>{{ model }}</td>
-                    <td>{{ details.score }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+            <tbody></tbody>
         </table>
-    {% endif %}
+        <br>
+        <a href="/predict">Go to Prediction</a>
+    </div>
 
-    <br>
-    <a href="/predict">Go to Prediction</a>
+    <script>
+        const selectedFeature = "{{ selected_feature }}";
+        const progressBar = document.getElementById("progress-bar");
+        const statusText = document.getElementById("status-text");
+
+        // Simulates gradual progress while training runs
+        let progress = 10;
+        progressBar.style.width = progress + "%";
+        const interval = setInterval(() => {
+            if (progress < 90) {
+                progress += 10;
+                progressBar.style.width = progress + "%";
+            }
+        }, 1200);
+
+        // Call the training API
+        fetch("/api/train", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ selected_feature: selectedFeature })
+        })
+        .then(res => res.json())
+        .then(data => {
+            clearInterval(interval);
+            progressBar.style.width = "100%";
+
+            setTimeout(() => {
+                document.getElementById("loading-section").style.display = "none";
+                document.getElementById("results-section").style.display = "block";
+
+                document.getElementById("best-model").textContent = data.best_model_name;
+                document.getElementById("score").textContent = data.score;
+
+                const tbody = document.querySelector("#report-table tbody");
+                tbody.innerHTML = "";
+                for (const [model, details] of Object.entries(data.model_report)) {
+                    const row = `<tr><td>${model}</td><td>${details.score}</td></tr>`;
+                    tbody.innerHTML += row;
+                }
+            }, 500);
+        })
+        .catch(err => {
+            clearInterval(interval);
+            statusText.textContent = "Training failed. Please check your logs.";
+            statusText.style.color = "red";
+        });
+    </script>
 </body>
 </html>
