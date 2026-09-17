@@ -5,3 +5,4 @@ logs/
 .env
 catboost_info/
 Model_Trainer.egg-info
+try_data/

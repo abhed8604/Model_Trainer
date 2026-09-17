@@ -16,3 +16,6 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+
+# to suppress flask logs and warning
+logging.getLogger("werkzeug").setLevel(logging.ERROR)
