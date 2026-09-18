@@ -1,62 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Dataset - Model Trainer</title>
-    <style>
-        :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f8fafc; --surface: #fff; --border: #e2e8f0; --text: #0f172a; --muted: #64748b; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-        .container { width: 100%; max-width: 520px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,.04); padding: 36px 32px; }
-        nav { margin-bottom: 20px; }
-        nav a { color: var(--muted); text-decoration: none; font-size: .875rem; font-weight: 500; }
-        nav a:hover { color: var(--primary); }
-        .step-tag { display: inline-block; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--primary); background: #eff6ff; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; }
-        h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
-        .subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-size: .875rem; font-weight: 500; }
-        input[type="file"], select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: .9rem; background: #fff; color: var(--text); outline: none; }
-        input[type="file"] { padding: 8px 10px; background: #f8fafc; cursor: pointer; }
-        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
-        .btn { display: inline-block; width: 100%; padding: 11px 20px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: .95rem; font-weight: 500; cursor: pointer; text-align: center; }
-        .btn:hover { background: var(--primary-hover); }
-        .divider { border: 0; height: 1px; background: var(--border); margin: 32px 0; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Dataset - Model Trainer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    nav a { color: #64748b; text-decoration: none; font-size: 0.85rem; }
+    nav a:hover { color: #2563eb; }
+    .tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #2563eb;
+      background: #eff6ff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-top: 12px;
+    }
+    h2 { font-size: 1.25rem; margin: 4px 0; }
+    p { color: #64748b; font-size: 0.85rem; margin-bottom: 16px; }
+    form { display: flex; flex-direction: column; gap: 12px; }
+    label { font-size: 0.8rem; font-weight: 600; display: block; }
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      background: #fff;
+    }
+    .btn {
+      padding: 9px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn:hover { background: #1d4ed8; }
+    hr { border: none; border-top: 1px solid #e2e8f0; margin: 18px 0; }
+    #file-info { font-size: 0.78rem; color: #2563eb; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <nav><a href="/">← Back to Home</a></nav>
-        <span class="step-tag">Step 1</span>
-        <h2>Upload Dataset</h2>
-        <p class="subtitle">Select a CSV file to split into training and testing sets.</p>
+  <main class="card">
+    <nav><a href="/">← Back to Home</a></nav>
 
-        <form action="/upload" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="file">Dataset CSV File</label>
-                <input type="file" id="file" name="file" accept=".csv" required>
-            </div>
-            <button type="submit" class="btn">Upload & Process</button>
-        </form>
+    <span class="tag">Step 1</span>
+    <h2>Upload Dataset</h2>
+    <p>Choose a CSV file to split into training and testing sets.</p>
 
-        {% if features %}
-            <hr class="divider">
-            <span class="step-tag">Step 2</span>
-            <h2>Select Dependent Feature</h2>
-            <p class="subtitle">Choose the target column you want the model to learn and predict.</p>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+      <label for="file">Dataset (.csv)</label>
+      <input type="file" id="file" name="file" accept=".csv" required onchange="showFile(this)">
+      <p id="file-info"></p>
+      <button type="submit" class="btn">Upload and Process</button>
+    </form>
 
-            <form action="/training" method="POST">
-                <div class="form-group">
-                    <label for="selected_feature">Target Column</label>
-                    <select id="selected_feature" name="selected_feature" required>
-                        {% for col in features %}
-                            <option value="{{ col }}">{{ col }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <button type="submit" class="btn">Confirm Feature & Continue →</button>
-            </form>
-        {% endif %}
-    </div>
+    {% if features %}
+      <hr>
+      <span class="tag">Step 2</span>
+      <h2>Select Target Column</h2>
+      <p>Choose the feature you want the model to predict.</p>
+
+      <form action="/training" method="POST">
+        <label for="selected_feature">Target Column</label>
+        <select id="selected_feature" name="selected_feature" required>
+          {% for col in features %}
+            <option value="{{ col }}">{{ col }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn">Confirm Target & Train →</button>
+      </form>
+    {% endif %}
+  </main>
+
+  <script>
+    function showFile(el) {
+      document.getElementById("file-info").textContent = el.files[0] ? "Selected: " + el.files[0].name : "";
+    }
+  </script>
 </body>
 </html>

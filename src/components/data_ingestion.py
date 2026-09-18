@@ -19,6 +19,9 @@ class DataIngestion:
         logging.info('Entered the data ingestion')
         try:
             df=pd.read_csv(file)
+
+            # Drop duplicate rows
+            df = df.drop_duplicates()      
             
             os.makedirs(os.path.dirname(self.ingestion_path.train_data_path),exist_ok=True)
     

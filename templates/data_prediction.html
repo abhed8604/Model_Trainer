@@ -1,65 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Prediction - Model Trainer</title>
-    <style>
-        :root { --primary: #2563eb; --primary-hover: #1d4ed8; --success-bg: #f0fdf4; --success-border: #bbf7d0; --success-text: #15803d; --bg: #f8fafc; --surface: #fff; --border: #e2e8f0; --text: #0f172a; --muted: #64748b; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-        .container { width: 100%; max-width: 560px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,.04); padding: 36px 32px; }
-        nav { margin-bottom: 20px; display: flex; gap: 12px; font-size: .875rem; }
-        nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
-        nav a:hover { color: var(--primary); }
-        h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
-        .subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
-        .form-group { margin-bottom: 16px; }
-        label { display: block; margin-bottom: 6px; font-size: .875rem; font-weight: 500; }
-        input[type="number"], select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: .9rem; background: #fff; color: var(--text); outline: none; }
-        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
-        .btn { display: inline-block; width: 100%; padding: 11px 20px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: .95rem; font-weight: 500; cursor: pointer; text-align: center; margin-top: 8px; }
-        .btn:hover { background: var(--primary-hover); }
-        .result-card { background: var(--success-bg); border: 1px solid var(--success-border); border-radius: 8px; padding: 18px 20px; margin-top: 24px; text-align: center; }
-        .result-title { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 600; color: var(--success-text); margin-bottom: 4px; }
-        .result-value { font-size: 1.6rem; font-weight: 700; color: var(--success-text); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Prediction - Model Trainer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      display: flex;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+    .card {
+      width: 100%;
+      max-width: 480px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    nav a { color: #64748b; text-decoration: none; font-size: 0.85rem; }
+    nav a:hover { color: #2563eb; }
+    h2 { font-size: 1.25rem; margin: 12px 0 4px; }
+    p { color: #64748b; font-size: 0.85rem; margin-bottom: 16px; }
+    .result {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      margin: 12px 0;
+      color: #15803d;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    .result span {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    label { font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 4px; }
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      background: #fff;
+    }
+    .actions { display: flex; gap: 8px; }
+    .btn {
+      flex: 2;
+      padding: 9px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn:hover { background: #1d4ed8; }
+    .btn-alt { flex: 1; background: #f1f5f9; color: #475569; }
+    .empty { text-align: center; padding: 20px 0; color: #64748b; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <nav><a href="/">Home</a> · <a href="/upload">Upload Dataset</a></nav>
-        <h2>Data Prediction</h2>
-        <p class="subtitle">Enter input features to obtain inference from the trained model.</p>
+  <main class="card">
+    <nav><a href="/">Home</a> · <a href="/upload">Upload Dataset</a></nav>
 
-        <form action="/predict" method="POST">
-            {% for feature in features %}
-                <div class="form-group">
-                    <label for="{{ feature }}">{{ feature }}</label>
-                    {% if feature in cat_feature_info %}
-                        <select id="{{ feature }}" name="{{ feature }}" required>
-                            <option value="" disabled selected>Select {{ feature }}</option>
-                            {% for val in cat_feature_info[feature]['values'] %}
-                                <option value="{{ val }}">{{ val }}</option>
-                            {% endfor %}
-                        </select>
-                    {% else %}
-                        <input type="number" step="any" id="{{ feature }}" name="{{ feature }}" placeholder="Enter value" required>
-                    {% endif %}
-                </div>
-            {% endfor %}
-            <button type="submit" class="btn">Predict</button>
-        </form>
+    {% set res = result if result is not none else results %}
+    {% if res is not none and res != '' %}
+      <div class="result">
+        <span>Prediction Result</span>
+        {{ res }}
+      </div>
+    {% endif %}
 
-        {% if result is not none %}
-            <div class="result-card">
-                <div class="result-title">Prediction Result</div>
-                <div class="result-value">{{ result }}</div>
+    <h2>Data Prediction</h2>
+    <p>Enter input features to calculate model prediction.</p>
+
+    {% if features %}
+      <form action="/predict" method="POST">
+        <div class="grid">
+          {% for feature in features %}
+            <div>
+              <label for="{{ feature }}">{{ feature }}</label>
+              {% if feature in cat_feature_info %}
+                <select id="{{ feature }}" name="{{ feature }}" required>
+                  <option value="" disabled selected>Select</option>
+                  {% for val in cat_feature_info[feature]['values'] %}
+                    <option value="{{ val }}">{{ val }}</option>
+                  {% endfor %}
+                </select>
+              {% else %}
+                <input type="number" step="any" id="{{ feature }}" name="{{ feature }}" required>
+              {% endif %}
             </div>
-        {% elif results %}
-            <div class="result-card">
-                <div class="result-title">Prediction Result</div>
-                <div class="result-value">{{ results }}</div>
-            </div>
-        {% endif %}
-    </div>
+          {% endfor %}
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn">Predict</button>
+          <button type="reset" class="btn btn-alt">Clear</button>
+        </div>
+      </form>
+    {% else %}
+      <div class="empty">
+        <p>No model trained yet. Please upload a dataset first.</p>
+        <a href="/upload" class="btn" style="display: inline-block; margin-top: 12px; text-decoration: none;">Go to Upload →</a>
+      </div>
+    {% endif %}
+  </main>
 </body>
 </html>

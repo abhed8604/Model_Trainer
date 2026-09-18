@@ -21,12 +21,11 @@ class DataTransformation:
     def __init__(self):
         self.data_transformation_config=DataTransformationConfig()
 
-    def get_preprocessor_obj(self,selected_feature):
+    def get_preprocessor_obj(self,train_df,selected_feature):
         try:
 
-            df=pd.read_csv('artifacts/train.csv')
-            numerical_features = df.select_dtypes(include=['number']).columns.tolist()
-            categorical_features = df.select_dtypes(include=['object', 'category']).columns.tolist()
+            numerical_features = train_df.select_dtypes(include=['number']).columns.tolist()
+            categorical_features = train_df.select_dtypes(include=['object', 'category']).columns.tolist()
 
             # removing dependent feature from num feature
             if selected_feature in numerical_features:
@@ -37,7 +36,7 @@ class DataTransformation:
             for cat_feature in categorical_features:
                 cat_feature_info[cat_feature]={
                     'name': cat_feature,
-                    'values': df[cat_feature].dropna().unique().tolist()
+                    'values': train_df[cat_feature].dropna().unique().tolist()
                 }
     
             # pipeline chains multiple steps of data transformation as one object
@@ -71,6 +70,36 @@ class DataTransformation:
         except Exception as e:
             raise CustomException(e,sys)
 
+    def auto_feature_selection(self,train_df,test_df,selected_feature):
+        try:
+            corr = train_df.select_dtypes(include=['number'])
+            corr = corr.corr().abs() # calculated the correlation matrix of all num features and made it absolute value
+            drop_cols=[]
+    
+            # filtering columns which have less than 0.05 relation with the target feature
+            for col in corr.columns:
+                if col != selected_feature and corr[selected_feature][col] < 0.05:
+                    drop_cols.append(col)   
+            
+            # filtering one feature from feature pair with more than 85% correlation
+            for i in range(len(corr.columns)):
+                for j in range(i):
+                    if corr.iloc[i, j] > 0.85:
+                        col_name = corr.columns[i]
+                        if col_name != selected_feature and col_name not in drop_cols:
+                            drop_cols.append(col_name)
+                            
+            logging.info(f'Dropping columns based on correlation: {drop_cols}')
+            
+            # droping useless columns from both dataframes
+            train_df = train_df.drop(columns=drop_cols)
+            test_df = test_df.drop(columns=drop_cols)
+            
+            return train_df, test_df
+
+        except Exception as e:
+            raise CustomException(e,sys)
+        
     def initiate_preprocessing(self,selected_feature):
         try:
         
@@ -83,9 +112,14 @@ class DataTransformation:
             train_df = train_df.dropna(subset=[selected_feature])
             test_df = test_df.dropna(subset=[selected_feature])
             
+            logging.info('Starting auto feature selection')
+            
+            # auto feature selection 
+            train_df,test_df = self.auto_feature_selection(train_df,test_df,selected_feature)           
+            
             logging.info('Obtaining preprocessing object')
             
-            preprocessing_obj,cat_feature_info=self.get_preprocessor_obj(selected_feature)
+            preprocessing_obj,cat_feature_info=self.get_preprocessor_obj(train_df,selected_feature)
     
             input_feature_train_df=train_df.drop(columns=[selected_feature])
             target_feature_train_df=train_df[selected_feature]
@@ -112,6 +146,7 @@ class DataTransformation:
             )
 
             # Save categorical features info
+            # i did this to save features as files which can be just used globally
             save_pickle(
                 file_path=os.path.join('artifacts', 'cat_feature_info.pkl'),
                 obj=cat_feature_info
@@ -119,7 +154,7 @@ class DataTransformation:
     
             return(
                 train_arr,
-                test_arr,
+                test_arr
             )
 
         except Exception as e:

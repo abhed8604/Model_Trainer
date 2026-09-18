@@ -1,96 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Model Training - Model Trainer</title>
-    <style>
-        :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f8fafc; --surface: #fff; --border: #e2e8f0; --text: #0f172a; --muted: #64748b; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-        .container { width: 100%; max-width: 560px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,.04); padding: 36px 32px; }
-        nav { margin-bottom: 20px; display: flex; gap: 12px; font-size: .875rem; }
-        nav a { color: var(--muted); text-decoration: none; font-weight: 500; }
-        nav a:hover { color: var(--primary); }
-        h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
-        .target-box { background: #f1f5f9; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 16px 0 24px; font-size: .9rem; display: flex; justify-content: space-between; }
-        .target-box strong { color: var(--primary); }
-        #loading-section { margin: 24px 0; text-align: center; }
-        #status-text { color: var(--muted); font-size: .9rem; margin-bottom: 14px; }
-        #progress-container { width: 100%; background: #e2e8f0; height: 10px; border-radius: 9999px; overflow: hidden; }
-        #progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 9999px; transition: width .4s ease; }
-        .metric-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 20px; }
-        .metric-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: .9rem; }
-        .metric-label { color: var(--muted); }
-        .metric-value { font-weight: 600; color: var(--text); }
-        h3 { font-size: 1.05rem; font-weight: 600; margin: 20px 0 10px; }
-        .table-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 24px; }
-        table { width: 100%; border-collapse: collapse; font-size: .875rem; }
-        th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
-        tr:last-child td { border-bottom: none; }
-        th { background: #f8fafc; color: var(--muted); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
-        .btn { display: inline-block; width: 100%; padding: 11px 20px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: .95rem; font-weight: 500; text-align: center; text-decoration: none; cursor: pointer; }
-        .btn:hover { background: var(--primary-hover); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Training - Model Trainer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      display: flex;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+    .card {
+      width: 100%;
+      max-width: 480px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    nav a { color: #64748b; text-decoration: none; font-size: 0.85rem; }
+    nav a:hover { color: #2563eb; }
+    h2 { font-size: 1.25rem; margin: 12px 0 8px; }
+    .panel {
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+    .success { background: #f0fdf4; color: #15803d; }
+    #status { color: #64748b; font-size: 0.84rem; margin-bottom: 8px; }
+    .track {
+      background: #e2e8f0;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    #bar {
+      width: 20%;
+      height: 100%;
+      background: #2563eb;
+      transition: width 0.3s;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+      margin: 10px 0 16px;
+    }
+    th, td { padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: left; }
+    th { color: #64748b; }
+    .btn {
+      display: block;
+      padding: 10px;
+      background: #2563eb;
+      color: #fff;
+      border-radius: 6px;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .btn:hover { background: #1d4ed8; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <nav><a href="/">Home</a> · <a href="/upload">Upload Another Dataset</a></nav>
-        <h2>Model Training</h2>
-        <div class="target-box"><span>Target Feature:</span><strong>{{ selected_feature }}</strong></div>
+  <main class="card">
+    <nav><a href="/">Home</a> · <a href="/upload">Upload Dataset</a></nav>
 
-        <div id="loading-section">
-            <p id="status-text">Training models and tuning hyperparameters...</p>
-            <div id="progress-container"><div id="progress-bar"></div></div>
-        </div>
-
-        <div id="results-section" style="display:none;">
-            <h3>Best Model Result</h3>
-            <div class="metric-card">
-                <div class="metric-row"><span class="metric-label">Best Algorithm</span><strong id="best-model" class="metric-value"></strong></div>
-                <div class="metric-row"><span class="metric-label">Model Score (R²)</span><strong id="score" class="metric-value"></strong></div>
-            </div>
-
-            <h3>All Models Evaluation</h3>
-            <div class="table-wrap">
-                <table id="report-table">
-                    <thead><tr><th>Model</th><th>Score (R²)</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <a href="/predict" class="btn">Proceed to Data Prediction →</a>
-        </div>
+    <h2>Model Training</h2>
+    <div class="panel">
+      <span>Target Feature:</span>
+      <strong>{{ selected_feature }}</strong>
     </div>
 
-    <script>
-        const selectedFeature = "{{ selected_feature }}";
-        const progressBar = document.getElementById("progress-bar"), statusText = document.getElementById("status-text");
-        let progress = 10;
-        progressBar.style.width = progress + "%";
-        const interval = setInterval(() => { if (progress < 90) { progress += 10; progressBar.style.width = progress + "%"; } }, 1200);
+    <section id="loading">
+      <p id="status">Training models and tuning hyperparameters...</p>
+      <div class="track"><div id="bar"></div></div>
+    </section>
 
-        fetch("/api/train", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ selected_feature: selectedFeature })
-        })
-        .then(res => res.json())
-        .then(data => {
-            clearInterval(interval);
-            progressBar.style.width = "100%";
-            setTimeout(() => {
-                document.getElementById("loading-section").style.display = "none";
-                document.getElementById("results-section").style.display = "block";
-                document.getElementById("best-model").textContent = data.best_model_name;
-                document.getElementById("score").textContent = data.score;
-                const tbody = document.querySelector("#report-table tbody");
-                tbody.innerHTML = Object.entries(data.model_report).map(([m, d]) => `<tr><td>${m}</td><td>${d.score}</td></tr>`).join("");
-            }, 500);
-        })
-        .catch(err => {
-            clearInterval(interval);
-            statusText.textContent = "Training failed. Please check your logs.";
-            statusText.style.color = "#dc2626";
-        });
-    </script>
+    <section id="results" style="display: none;">
+      <div class="panel success">
+        <span>Best: <strong id="best-name"></strong></span>
+        <span>R² Score: <strong id="best-score"></strong></span>
+      </div>
+
+      <table>
+        <tr>
+          <th>Model</th>
+          <th style="text-align: right;">R² Score</th>
+        </tr>
+        <tbody id="rows"></tbody>
+      </table>
+
+      <a href="/predict" class="btn">Proceed to Prediction →</a>
+    </section>
+  </main>
+
+  <script>
+    const bar = document.getElementById("bar");
+    let pct = 15;
+    const timer = setInterval(() => {
+      if (pct < 90) bar.style.width = (pct += 10) + "%";
+    }, 1000);
+
+    fetch("/api/train", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ selected_feature: "{{ selected_feature }}" })
+    })
+      .then(r => r.json())
+      .then(data => {
+        clearInterval(timer);
+        bar.style.width = "100%";
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("results").style.display = "block";
+        document.getElementById("best-name").textContent = data.best_model_name;
+        document.getElementById("best-score").textContent = Number(data.score).toFixed(4);
+
+        const items = Object.entries(data.model_report).sort((a, b) => b[1].score - a[1].score);
+        document.getElementById("rows").innerHTML = items.map(([name, item]) => `
+          <tr style="${name === data.best_model_name ? 'font-weight:600;color:#15803d;' : ''}">
+            <td>${name}</td>
+            <td style="text-align:right;">${Number(item.score).toFixed(4)}</td>
+          </tr>
+        `).join("");
+      })
+      .catch(() => {
+        clearInterval(timer);
+        document.getElementById("status").textContent = "Training failed. Check server logs.";
+        document.getElementById("status").style.color = "#dc2626";
+      });
+  </script>
 </body>
 </html>
