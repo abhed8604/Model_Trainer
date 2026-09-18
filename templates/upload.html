@@ -1,145 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Dataset - Model Trainer</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg: #f8fafc;
-            --surface: #ffffff;
-            --border: #e2e8f0;
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --radius: 12px;
-            --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.04), 0 4px 6px -4px rgb(0 0 0 / 0.04);
-        }
+        :root { --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f8fafc; --surface: #fff; --border: #e2e8f0; --text: #0f172a; --muted: #64748b; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-        }
-        .container {
-            width: 100%;
-            max-width: 520px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 36px 32px;
-        }
-        nav {
-            margin-bottom: 20px;
-        }
-        nav a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: color 0.15s;
-        }
-        nav a:hover {
-            color: var(--primary);
-        }
-        .step-tag {
-            display: inline-block;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--primary);
-            background: #eff6ff;
-            padding: 3px 8px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        h2 {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: -0.02em;
-            margin-bottom: 6px;
-        }
-        p.subtitle {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 24px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text);
-        }
-        input[type="file"], select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            background: #ffffff;
-            color: var(--text);
-            outline: none;
-            transition: border-color 0.15s, box-shadow 0.15s;
-        }
-        input[type="file"] {
-            padding: 8px 10px;
-            background: #f8fafc;
-            cursor: pointer;
-        }
-        input[type="file"]:focus, select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-        }
-        .btn {
-            display: inline-block;
-            width: 100%;
-            padding: 11px 20px;
-            background-color: var(--primary);
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            text-align: center;
-            transition: background-color 0.15s;
-        }
-        .btn:hover {
-            background-color: var(--primary-hover);
-        }
-        .divider {
-            border: 0;
-            height: 1px;
-            background: var(--border);
-            margin: 32px 0;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+        .container { width: 100%; max-width: 520px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,.04); padding: 36px 32px; }
+        nav { margin-bottom: 20px; }
+        nav a { color: var(--muted); text-decoration: none; font-size: .875rem; font-weight: 500; }
+        nav a:hover { color: var(--primary); }
+        .step-tag { display: inline-block; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--primary); background: #eff6ff; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; }
+        h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
+        .subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: .875rem; font-weight: 500; }
+        input[type="file"], select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: .9rem; background: #fff; color: var(--text); outline: none; }
+        input[type="file"] { padding: 8px 10px; background: #f8fafc; cursor: pointer; }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
+        .btn { display: inline-block; width: 100%; padding: 11px 20px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: .95rem; font-weight: 500; cursor: pointer; text-align: center; }
+        .btn:hover { background: var(--primary-hover); }
+        .divider { border: 0; height: 1px; background: var(--border); margin: 32px 0; }
     </style>
 </head>
 <body>
     <div class="container">
-        <nav>
-            <a href="/">← Back to Home</a>
-        </nav>
-
+        <nav><a href="/">← Back to Home</a></nav>
         <span class="step-tag">Step 1</span>
         <h2>Upload Dataset</h2>
         <p class="subtitle">Select a CSV file to split into training and testing sets.</p>
 
-        <!-- Upload Form -->
         <form action="/upload" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="file">Dataset CSV File</label>
@@ -148,7 +39,6 @@
             <button type="submit" class="btn">Upload & Process</button>
         </form>
 
-        <!-- Dropdown appears after upload -->
         {% if features %}
             <hr class="divider">
             <span class="step-tag">Step 2</span>

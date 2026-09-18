@@ -78,6 +78,10 @@ class DataTransformation:
             
             train_df=pd.read_csv('artifacts/train.csv')
             test_df=pd.read_csv('artifacts/test.csv')
+
+            # removing the rows with missing target columns as model cant be trained if target is NaN
+            train_df = train_df.dropna(subset=[selected_feature])
+            test_df = test_df.dropna(subset=[selected_feature])
             
             logging.info('Obtaining preprocessing object')
             
