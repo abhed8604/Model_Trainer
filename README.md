@@ -38,9 +38,25 @@ python app.py
 ```
 Open `http://localhost:5000` in your browser.
 
+---
+
+### Alternative: Run with Docker
+
+1. Build the image:
+```bash
+docker build -t model-trainer .
+```
+
+2. Run the container:
+```bash
+docker run -p 5000:5000 model-trainer
+```
+Open `http://localhost:5000` in your browser.
+
 ## Project Layout
 
 - `app.py`: Flask routes (`/`, `/upload`, `/training`, `/api/train`, `/predict`)
+- `Dockerfile`: Container configuration for packaging and running the application
 - `src/components/data_ingestion.py`: CSV ingestion and train/test splitting
 - `src/components/data_transformation.py`: Pipelines for numerical & categorical features
 - `src/components/model_training.py`: Grid search hyperparameter tuning & model selection
