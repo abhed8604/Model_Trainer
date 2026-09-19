@@ -105,8 +105,8 @@ class DataTransformation:
         
             logging.info('Reading train and test data')
             
-            train_df=pd.read_csv('artifacts/train.csv')
-            test_df=pd.read_csv('artifacts/test.csv')
+            train_df=pd.read_csv(os.path.join('artifacts','train.csv'))
+            test_df=pd.read_csv(os.path.join('artifacts','test.csv'))
 
             # removing the rows with missing target columns as model cant be trained if target is NaN
             train_df = train_df.dropna(subset=[selected_feature])

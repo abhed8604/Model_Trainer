@@ -12,10 +12,4 @@ class CustomException(Exception):
         logging.error(str(self))
 
     def __str__(self):
-        return (
-            '\n' + '__' * 100 + '\n'
-            f'File:    {self.file_name}\n'
-            f'Line:    {self.lineno}\n'
-            f'Message: {self.error_message}\n'
-            + '__' * 100
-        )
+        return f"Error in {self.file_name} (line {self.lineno}): {self.error_message}"

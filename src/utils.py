@@ -40,6 +40,7 @@ def evaluate_model(X_train,y_train,X_test,y_test,models,params):
             gs.fit(X_train,y_train)
 
             best_model = gs.best_estimator_
+            del gs # we delete the model to free up memory
             
             y_pred = best_model.predict(X_test)
             test_score = r2_score(y_test, y_pred)
